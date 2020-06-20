@@ -16,6 +16,8 @@
 import React, { useState, useEffect } from "react";
 import api from './services/api';
 
+import Repository from './components/Repository';
+
 import "./styles.css";
 
 function App() {
@@ -23,9 +25,9 @@ function App() {
 
   useEffect(() => {
     api.get('repositories').then(response => {
-      setRepositories(response.data);
-    }, []);
-  });
+        setRepositories(response.data);
+    });
+  }, []);
 
   async function handleAddRepository() {
     const response = await api.post('repositories', {
@@ -42,9 +44,7 @@ function App() {
   async function handleRemoveRepository(id) {
     const response = await api.delete(`repositories/${id}`);
 
-    const repositoryIndex = repositories.findIndex(repo => repo.id === id);
-
-    setRepositories([repositories.splice(repositoryIndex, 1)]);
+    setRepositories(repositories.filter(repo => repo.id !== id));
   }
 
   return (
@@ -53,12 +53,11 @@ function App() {
         {
           repositories.map(repo => {
             return (
-              <li key={repo.id}>
-                {repo.title}
+              <Repository key={repo.id} title={repo.title}>
                 <button onClick={() => handleRemoveRepository(repo.id)}>
                   Remover
                 </button>
-              </li>
+              </Repository>
             )
           })
         }
